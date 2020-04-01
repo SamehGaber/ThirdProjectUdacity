@@ -41,8 +41,6 @@ def test_api():
 @app.route('/drinks', methods=['GET'])
 def get_drinks():
     drinks_all = Drink.query.all()
-    print("it works here ")
-    print(drinks_all)
     drinks = [drink.short() for drink in drinks_all]
     if len(drinks) == 0:
         abort(404)
@@ -126,6 +124,22 @@ def create_new_drink():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:id>', methods=['PATCH'])
+#@requires_auth('patch:drinks')
+def update_drink(id):
+    drink = Drink.query.filter(Drink.id == id).one_or_none()
+    body = request.get_json()
+    drink.title = body.get('title', drink.title)
+    drink.recipe = json.dumps(body.get('recipe'))
+    drink.update()
+    drinks_all = Drink.query.all()
+    drinks = [drink.long() for drink in drinks_all]
+
+    return jsonify ({
+        "success": True ,
+        "drinks": drinks, 
+        "modiefed_drink_id" : id
+      })
 
 
 '''
@@ -139,9 +153,9 @@ def create_new_drink():
         or appropriate status code indicating reason for failure
 '''
 
-@app.route('/drinks/<int:drink_id>', methods=['DELETE'])
-def delete_specific_drink(drink_id):
-    selected_drink=Drink.query.get(drink_id)
+@app.route('/drinks/<int:id>', methods=['DELETE'])
+def delete_specific_drink(id):
+    selected_drink=Drink.query.get(id)
     selected_drink.delete()
     drinks = Drink.query.all()
     
@@ -152,7 +166,7 @@ def delete_specific_drink(drink_id):
     
     return jsonify ({
         'success': True ,
-        'deleted' : drink_id 
+        'deleted' : id 
       })
     
 
