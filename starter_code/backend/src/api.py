@@ -16,7 +16,7 @@ CORS(app)
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
-db_drop_and_create_all()
+#db_drop_and_create_all()
 
 ## ROUTES
 
@@ -41,13 +41,17 @@ def test_api():
 @app.route('/drinks', methods=['GET'])
 def get_drinks():
     drinks_all = Drink.query.all()
+    print("it works here ")
+    print(drinks_all)
     drinks = [drink.short() for drink in drinks_all]
     if len(drinks) == 0:
         abort(404)
+
     return jsonify({
       'success': True ,
       'drinks' : drinks 
     })
+    
 
 
   
@@ -59,6 +63,19 @@ def get_drinks():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks-detail', methods=['GET'])
+def get_drinks_details():
+    drinks_all = Drink.query.all()
+    print("it works here ")
+    print(drinks_all)
+    drinks = [drink.long() for drink in drinks_all]
+    if len(drinks) == 0:
+        abort(404)
+
+    return jsonify({
+      'success': True ,
+      'drinks' : drinks 
+    })
 
 
 '''
@@ -70,7 +87,33 @@ def get_drinks():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['post'])
+def create_new_drink():
+    body = request.get_json()
+    new_title= body.get('title', None)
+    new_recipe= body.get('recipe', None)
+   
+    
+    new_drink = Drink(title=new_title , recipe=json.dumps(new_recipe))
+    new_drink.insert()
+    drinks_all = Drink.query.all()
+    drinks = [drink.long() for drink in drinks_all]
 
+    return jsonify ({
+        "success": True ,
+        "drinks": drinks,     
+      })
+    
+'''
+{
+    "title": "Water3",
+    "recipe": [{
+        "name": "Water",
+        "color": "blue",
+        "parts": 1
+    }]
+}
+'''
 
 '''
 @TODO implement endpoint
@@ -95,6 +138,26 @@ def get_drinks():
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+
+@app.route('/drinks/<int:drink_id>', methods=['DELETE'])
+def delete_specific_drink(drink_id):
+    selected_drink=Drink.query.get(drink_id)
+    selected_drink.delete()
+    drinks = Drink.query.all()
+    
+
+    if selected_drink is None:
+      abort(404)
+    
+    
+    return jsonify ({
+        'success': True ,
+        'deleted' : drink_id 
+      })
+    
+
+
+
 
 
 ## Error Handling
