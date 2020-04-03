@@ -39,7 +39,7 @@ def test_api(self):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['GET'])
-@requires_auth()
+@requires_auth('get:drinks')
 def get_drinks(self):
     drinks_all = Drink.query.all()
     drinks = [drink.short() for drink in drinks_all]
@@ -63,7 +63,7 @@ def get_drinks(self):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail', methods=['GET'])
-@requires_auth()
+@requires_auth('get:drinks-detail')
 def get_drinks_details(self):
     drinks_all = Drink.query.all()
     print("it works here ")
@@ -88,7 +88,7 @@ def get_drinks_details(self):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['post'])
-@requires_auth()
+@requires_auth('post:drinks')
 def create_new_drink(self):
     body = request.get_json()
     new_title= body.get('title', None)
@@ -129,7 +129,7 @@ def create_new_drink(self):
 '''
 @app.route('/drinks/<int:id>', methods=['PATCH'])
 #@requires_auth('patch:drinks')
-@requires_auth()
+@requires_auth('patch:drinks')
 def update_drink(id):
     drink = Drink.query.filter(Drink.id == id).one_or_none()
     body = request.get_json()
@@ -158,7 +158,7 @@ def update_drink(id):
 '''
 
 @app.route('/drinks/<int:id>', methods=['DELETE'])
-@requires_auth()
+@requires_auth('delete:drinks')
 def delete_specific_drink(id):
     selected_drink=Drink.query.get(id)
     selected_drink.delete()
@@ -213,6 +213,13 @@ def unprocessable(error):
 @TODO implement error handler for 404
     error handler should conform to general task above 
 '''
+@app.errorhandler(400)
+def unprocessable(error):
+    return jsonify({
+                    "success": False, 
+                    "error": 400,
+                    "message": "Permission is not included in the JWT"
+                    }), 400
 
 
 '''
