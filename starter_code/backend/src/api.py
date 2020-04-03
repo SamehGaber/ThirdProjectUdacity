@@ -5,7 +5,7 @@ import json
 from flask_cors import CORS
 
 from .database.models import db_drop_and_create_all, setup_db, Drink
-from .auth.auth import AuthError, requires_auth
+from .auth.auth import AuthError, requires_auth , get_token_auth_header                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 
 app = Flask(__name__)
 setup_db(app)
@@ -22,11 +22,11 @@ CORS(app)
 
 # testing API end points 
 @app.route('/hello', methods=['GET'])
-def test_api():
-
+@requires_auth()
+def test_api(self):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
     return jsonify({
       'success': True ,
-      'say_hello' : "hello world " 
+      'say_hello' : "hello there" 
     })
 
 
@@ -39,7 +39,8 @@ def test_api():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['GET'])
-def get_drinks():
+@requires_auth()
+def get_drinks(self):
     drinks_all = Drink.query.all()
     drinks = [drink.short() for drink in drinks_all]
     if len(drinks) == 0:
@@ -62,7 +63,8 @@ def get_drinks():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail', methods=['GET'])
-def get_drinks_details():
+@requires_auth()
+def get_drinks_details(self):
     drinks_all = Drink.query.all()
     print("it works here ")
     print(drinks_all)
@@ -86,7 +88,8 @@ def get_drinks_details():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['post'])
-def create_new_drink():
+@requires_auth()
+def create_new_drink(self):
     body = request.get_json()
     new_title= body.get('title', None)
     new_recipe= body.get('recipe', None)
@@ -126,6 +129,7 @@ def create_new_drink():
 '''
 @app.route('/drinks/<int:id>', methods=['PATCH'])
 #@requires_auth('patch:drinks')
+@requires_auth()
 def update_drink(id):
     drink = Drink.query.filter(Drink.id == id).one_or_none()
     body = request.get_json()
@@ -154,6 +158,7 @@ def update_drink(id):
 '''
 
 @app.route('/drinks/<int:id>', methods=['DELETE'])
+@requires_auth()
 def delete_specific_drink(id):
     selected_drink=Drink.query.get(id)
     selected_drink.delete()
