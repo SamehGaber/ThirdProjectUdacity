@@ -22,8 +22,8 @@ CORS(app)
 
 # testing API end points 
 @app.route('/hello', methods=['GET'])
-@requires_auth()
-def test_api(self):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+#@requires_auth()
+def test_api():                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
     return jsonify({
       'success': True ,
       'say_hello' : "hello there" 
@@ -39,7 +39,7 @@ def test_api(self):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['GET'])
-@requires_auth('get:drinks')
+#@requires_auth('get:drinks')
 def get_drinks(self):
     drinks_all = Drink.query.all()
     drinks = [drink.short() for drink in drinks_all]
@@ -104,17 +104,7 @@ def create_new_drink(self):
         "success": True ,
         "drinks": drinks,     
       })
-    
-'''
-{
-    "title": "Water3",
-    "recipe": [{
-        "name": "Water",
-        "color": "blue",
-        "parts": 1
-    }]
-}
-'''
+
 
 '''
 @TODO implement endpoint
@@ -128,7 +118,6 @@ def create_new_drink(self):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:id>', methods=['PATCH'])
-#@requires_auth('patch:drinks')
 @requires_auth('patch:drinks')
 def update_drink(id):
     drink = Drink.query.filter(Drink.id == id).one_or_none()
@@ -159,7 +148,7 @@ def update_drink(id):
 
 @app.route('/drinks/<int:id>', methods=['DELETE'])
 @requires_auth('delete:drinks')
-def delete_specific_drink(id):
+def delete_specific_drink(id) :
     selected_drink=Drink.query.get(id)
     selected_drink.delete()
     drinks = Drink.query.all()
