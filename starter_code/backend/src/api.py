@@ -20,14 +20,6 @@ CORS(app)
 
 ## ROUTES
 
-# testing API end points 
-@app.route('/hello', methods=['GET'])
-#@requires_auth()
-def test_api():                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-    return jsonify({
-      'success': True ,
-      'say_hello' : "hello there" 
-    })
 
 
 '''
@@ -40,7 +32,7 @@ def test_api():
 '''
 @app.route('/drinks', methods=['GET'])
 #@requires_auth('get:drinks')
-def get_drinks(self):
+def get_drinks():
     drinks_all = Drink.query.all()
     drinks = [drink.short() for drink in drinks_all]
     if len(drinks) == 0:
